@@ -10,7 +10,7 @@ async function compress(input) {
 
 async function compressWithDict(input, dict) {
   await loaded;
-  const quality = 5; // 5;
+  const quality = 5;
   const mode = 1;
   const lgwin = 22;
   const buf = asm_encode._malloc(input.length);
