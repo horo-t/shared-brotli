@@ -23,16 +23,14 @@ i=0
 while [ "$i" -lt 10 ]; do
     PN=$(printf "%03d" $(expr $i + 1))
     i=$(expr $i + 1)
-    usleep 1000000
-    wget https://en.wikipedia.org/wiki/Special:Random -O "./wikipedia/pages/$PN.html"
+    curl -L https://en.wikipedia.org/wiki/Special:Random -o "./wikipedia/pages/$PN.html"
 done
 
 i=0
 while [ "$i" -lt 10 ]; do
     PN=$(printf "%03d" $(expr $i + 1))
     i=$(expr $i + 1)
-    usleep 1000000
-    wget https://en.wikipedia.org/wiki/Special:Random -O "./wikipedia/pages_for_dict/$PN.html"
+    curl -L https://en.wikipedia.org/wiki/Special:Random -o "./wikipedia/pages_for_dict/$PN.html"
 done
 
 ./brotli/research/bazel-bin/dictionary_generator -t128k ./wikipedia/wikipedia.dict ./wikipedia/pages_for_dict/*
