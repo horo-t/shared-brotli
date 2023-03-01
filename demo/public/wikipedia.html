@@ -1,0 +1,28 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const ui = document.getElementById("ui");
+      
+      for (let i = 1; i <= 10; ++i) {
+        const filename = ("000" + i).slice(-3) + ".html";
+        const div = document.createElement('div');
+        const a_tag = document.createElement('a');
+        a_tag.href = '/wikipedia/?id=' + filename;
+        a_tag.appendChild(document.createTextNode(filename));
+        div.appendChild(a_tag);
+        ui.appendChild(div);
+      }
+
+    });
+  </script>
+</head>
+<body>
+  <h2>Shared Brotli demo</h2>
+  <div>
+    <pre id="ui"></pre>
+  </div>
+  <div>
+    <pre id="disp"></pre>
+  </div>
+</body>

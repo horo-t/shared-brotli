@@ -9,6 +9,7 @@
   "dependencies": {
     "@fastify/static": "^6.5.0",
     "fastify": "^4.13.0",
+    "lru-cache": "^7.14.1",
     "workerpool": "^6.2.1"
   },
   "engines": {

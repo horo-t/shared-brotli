@@ -21,7 +21,7 @@ mkdir -p wikipedia/pages/
 
 i=0
 while [ "$i" -lt 10 ]; do
-    PN=$(printf "%02d" $(expr $i + 1))
+    PN=$(printf "%03d" $(expr $i + 1))
     i=$(expr $i + 1)
     usleep 1000000
     wget https://en.wikipedia.org/wiki/Special:Random -O "./wikipedia/pages/$PN.html"
@@ -29,7 +29,7 @@ done
 
 i=0
 while [ "$i" -lt 10 ]; do
-    PN=$(printf "%02d" $(expr $i + 1))
+    PN=$(printf "%03d" $(expr $i + 1))
     i=$(expr $i + 1)
     usleep 1000000
     wget https://en.wikipedia.org/wiki/Special:Random -O "./wikipedia/pages_for_dict/$PN.html"
