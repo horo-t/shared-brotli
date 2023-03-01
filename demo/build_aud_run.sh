@@ -11,7 +11,32 @@ cd third_party
 git clone https://github.com/google/brotli.git
 cd brotli
 git checkout $BROTLI_REV
-cd ../
+
+cd research/
+bazel build dictionary_generator
+cd ../../
+
+mkdir -p wikipedia/pages_for_dict/
+mkdir -p wikipedia/pages/
+
+i=0
+while [ "$i" -lt 10 ]; do
+    PN=$(printf "%02d" $(expr $i + 1))
+    i=$(expr $i + 1)
+    usleep 1000000
+    wget https://en.wikipedia.org/wiki/Special:Random -O "./wikipedia/pages/$PN.html"
+done
+
+i=0
+while [ "$i" -lt 10 ]; do
+    PN=$(printf "%02d" $(expr $i + 1))
+    i=$(expr $i + 1)
+    usleep 1000000
+    wget https://en.wikipedia.org/wiki/Special:Random -O "./wikipedia/pages_for_dict/$PN.html"
+done
+
+./brotli/research/bazel-bin/dictionary_generator -t128k ./wikipedia/wikipedia.dict ./wikipedia/pages_for_dict/*
+
 git clone https://github.com/emscripten-core/emsdk.git
 cd emsdk
 git checkout $EMSDK_REV
