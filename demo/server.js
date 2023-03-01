@@ -250,17 +250,14 @@ fastify.get(`/wikipedia/`, async function (request, reply) {
     reply.send('not found');
     return;
   }
-  console.log('shared-dictionary' + request.headers['shared-dictionary']);
+  console.log("sec-available-dictionary" + request.headers["sec-available-dictionary"]);
   if (
-    request.headers['shared-dictionary'] ==
+    request.headers["sec-available-dictionary"] ==
     'sha256/' + wikipedia_data.dict.sha256
   ) {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'sbr');
-    reply.header(
-      'shared-brotli-dictionary',
-      'sha256/' + wikipedia_data.dict.sha256
-    );
+    reply.header('vary', 'sec-available-dictionary');
     reply.send(Buffer.from(data.sbr));
   } else {
     reply.header('content-length', data.br.length);
