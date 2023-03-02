@@ -105,6 +105,12 @@ async function initilizeLib(lib, wikipediadata, googlesearchdata) {
     sha256: crypto.createHash('sha256').update(google_search_dict).digest('base64'),
     compressed: await compress.compress(google_search_dict),
   };
+  console.log(
+    'googlesearchdata.dict: ' +
+        `raw: ${googlesearchdata.dict.data.length} ` +
+        `sha256: ${googlesearchdata.dict.sha256} ` +
+        `compressed: ${googlesearchdata.dict.compressed.length}`
+  );
   for (let i = 1; i <= 10; ++i) {
     promises.push(
       new Promise(async (resolve) => {
