@@ -4,7 +4,7 @@ readonly BROTLI_REV="ed1995b6bda19244070ab5d331111f16f67c8054"
 readonly EMSDK_REV="17f6a2ef92f198f3c9ff30d07664e4090a0ecaf7"
 readonly EMSDK_VER="3.1.32"
 
-rm -rf third_party encode.wasm encode.js demofiles.tar.gz
+rm -rf third_party encode.wasm encode.js demofiles.zip
 
 mkdir third_party
 cd third_party
