@@ -68,11 +68,6 @@ done < ../search_list_for_dict.txt
 
 ./brotli/research/bazel-bin/dictionary_generator -t128k ./google_search/google_search.dict ./google_search/pages_for_dict/*
 
-zip -r demofiles.tar.gz \
-   third_party/wikipedia/wikipedia.dict \
-   third_party/wikipedia/pages/ \
-   third_party/google_search/google_search.dict \
-   third_party/google_search/pages/
 
 # Download Emscripten SDK
 git clone https://github.com/emscripten-core/emsdk.git
@@ -84,6 +79,12 @@ git checkout $EMSDK_REV
 
 source ./emsdk_env.sh
 cd ../../
+
+zip -r demofiles.zip \
+   third_party/wikipedia/wikipedia.dict \
+   third_party/wikipedia/pages/ \
+   third_party/google_search/google_search.dict \
+   third_party/google_search/pages/
 
 make
 
