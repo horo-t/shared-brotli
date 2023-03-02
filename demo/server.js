@@ -7,6 +7,8 @@ const path = require('path');
 const fs = require('fs').promises;
 const LRU = require('lru-cache');
 
+const is_in_glitch_demo = (process.env.PROJECT_DOMAIN == 'shared-brotli');
+
 async function getHttps(url) {
   return new Promise((resolve, reject) => {
     const data = [];
@@ -295,10 +297,13 @@ fastify.get(`/wikipedia/`, async function (request, reply) {
   } else {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'br');
-    reply.header(
-      'shared-dictionary-url',
-      '/wikipedia.dict'
-    );
+    if (is_in_glitch_demo) {
+      reply.header(
+        'shared-dictionary-url',
+        'https://shared-brotli-dictionary.glitch.me/wikipedia.dict');
+    } else {
+      reply.header('shared-dictionary-url','/wikipedia.dict');
+    }
     reply.send(Buffer.from(data.br));
   }
 });
@@ -378,10 +383,13 @@ fastify.get(`/google_search/`, async function (request, reply) {
   } else {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'br');
-    reply.header(
-      'shared-dictionary-url',
-      '/google_search.dict'
-    );
+    if (is_in_glitch_demo) {
+      reply.header(
+        'shared-dictionary-url',
+        'https://shared-brotli-dictionary.glitch.me/google_search.dict');
+    } else {
+      reply.header('shared-dictionary-url','/google_search.dict');
+    }
     reply.send(Buffer.from(data.br));
   }
 });
