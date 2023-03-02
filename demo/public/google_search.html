@@ -8,7 +8,7 @@
         const filename = ("000" + i).slice(-3) + ".html";
         const div = document.createElement('div');
         const a_tag = document.createElement('a');
-        a_tag.href = '/wikipedia/?id=' + filename;
+        a_tag.href = '/google_search/?id=' + filename;
         a_tag.appendChild(document.createTextNode(filename));
         div.appendChild(a_tag);
         ui.appendChild(div);
@@ -18,7 +18,7 @@
   </script>
 </head>
 <body>
-  <h2>Shared Brotli demo - Wikipedia</h2>
+  <h2>Shared Brotli demo - Google Search</h2>
   <div>
     <pre id="ui"></pre>
   </div>
