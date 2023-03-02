@@ -4,7 +4,7 @@ readonly BROTLI_REV="ed1995b6bda19244070ab5d331111f16f67c8054"
 readonly EMSDK_REV="17f6a2ef92f198f3c9ff30d07664e4090a0ecaf7"
 readonly EMSDK_VER="3.1.32"
 
-rm -rf third_party encode.wasm encode.js
+rm -rf third_party encode.wasm encode.js demofiles.tar.gz
 
 mkdir third_party
 cd third_party
@@ -67,6 +67,12 @@ while read line; do
 done < ../search_list_for_dict.txt
 
 ./brotli/research/bazel-bin/dictionary_generator -t128k ./google_search/google_search.dict ./google_search/pages_for_dict/*
+
+zip -r demofiles.tar.gz \
+   third_party/wikipedia/wikipedia.dict \
+   third_party/wikipedia/pages/ \
+   third_party/google_search/google_search.dict \
+   third_party/google_search/pages/
 
 # Download Emscripten SDK
 git clone https://github.com/emscripten-core/emsdk.git
