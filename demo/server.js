@@ -240,7 +240,7 @@ THREE_JS_VERSIONS.forEach((ver) => {
 
     const mached_ver = getMatchingVer(
       three_js_lib,
-      request.headers['shared-dictionary'],
+      request.headers['sec-available-dictionary'],
       ver
     );
     if (mached_ver !== undefined) {
