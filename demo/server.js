@@ -7,6 +7,8 @@ const path = require('path');
 const fs = require('fs').promises;
 const LRU = require('lru-cache');
 
+const OT_TOKEN = 'A1jTAcBaWu2+5WROkCJEneaGWyfIugSL5uO2WDZjEdWLFLHwjCbYICb/q2XDCfvdVM0HLbxYuiei2cA30AgjbQgAAAB0eyJvcmlnaW4iOiAiaHR0cHM6Ly9zaGFyZWQtYnJvdGxpLmdsaXRjaC5tZTo0NDMiLCAiZmVhdHVyZSI6ICJDb21wcmVzc2lvbkRpY3Rpb25hcnlUcmFuc3BvcnQiLCAiZXhwaXJ5IjogMTY4MjkyMTM1N30=';
+
 const is_in_glitch_demo = (process.env.PROJECT_DOMAIN == 'shared-brotli');
 
 async function getHttps(url) {
@@ -68,6 +70,7 @@ async function initilizeLib(lib, wikipediadata, googlesearchdata) {
   wikipediadata.dict = {
     data: wikipedia_dict,
     sha256: crypto.createHash('sha256').update(wikipedia_dict).digest('base64'),
+    hashhex: crypto.createHash('sha256').update(wikipedia_dict).digest('hex'),
     compressed: await compress.compress(wikipedia_dict),
   };
   console.log(
@@ -103,6 +106,7 @@ async function initilizeLib(lib, wikipediadata, googlesearchdata) {
   googlesearchdata.dict = {
     data: google_search_dict,
     sha256: crypto.createHash('sha256').update(google_search_dict).digest('base64'),
+    hashhex: crypto.createHash('sha256').update(google_search_dict).digest('hex'),
     compressed: await compress.compress(google_search_dict),
   };
   console.log(
@@ -152,6 +156,10 @@ async function initilizeLib(lib, wikipediadata, googlesearchdata) {
       .createHash('sha256')
       .update(data.file)
       .digest('base64');
+    data.hashhex = crypto
+      .createHash('sha256')
+      .update(data.file)
+      .digest('hex');
     console.log('sha256 ' + data.sha256);
     data.compressed = await compress.compress(data.file);
     console.log(
@@ -215,7 +223,7 @@ function getMatchingVer(lib, hashes_str, ver) {
   let mached_ver = undefined;
   let mached_size = -1;
   THREE_JS_VERSIONS.forEach((v) => {
-    if (hash_set['sha256/' + lib[v].sha256]) {
+    if (hash_set['sha256/' + lib[v].sha256] || hash_set[lib[v].hashhex]) {
       if (mached_size == -1 || mached_size > lib[ver][v].length) {
         mached_size = lib[ver][v].length;
         mached_ver = v;
@@ -232,9 +240,9 @@ THREE_JS_VERSIONS.forEach((ver) => {
     reply.header('content-type', 'application/javascript; charset=utf-8');
     reply.header('Cache-Control', 'public');
     if (request.query['path'] != undefined) {
-      reply.header('Can-Be-Used-As-Dictionary', request.query['path']);
+      reply.header('use-as-dictionary', 'match="' + request.query['path'] + '/*"');
     } else {
-      reply.header('Can-Be-Used-As-Dictionary', '/three/');
+      reply.header('use-as-dictionary', 'match="/three/*"');
     }
     await libinitilized;
 
@@ -265,6 +273,7 @@ fastify.get(`/wikipedia.dict`, async function (request, reply) {
   reply.header('Cache-Control', 'public');
   reply.header('content-type', 'binary/octet-stream');
   reply.header('Can-Be-Used-As-Dictionary', '/wikipedia/');
+  reply.header('use-as-dictionary', 'match="/wikipedia/*"');
   reply.header('content-length', wikipedia_data.dict.compressed.length);
   reply.header('content-encoding', 'br');
   reply.send(Buffer.from(wikipedia_data.dict.compressed));
@@ -294,7 +303,8 @@ fastify.get(`/wikipedia/`, async function (request, reply) {
   }
   if (
     request.headers["sec-available-dictionary"] ==
-    'sha256/' + wikipedia_data.dict.sha256
+      'sha256/' + wikipedia_data.dict.sha256 ||
+    request.headers["sec-available-dictionary"] == wikipedia_data.dict.hashhex
   ) {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'sbr');
@@ -303,13 +313,8 @@ fastify.get(`/wikipedia/`, async function (request, reply) {
   } else {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'br');
-    if (is_in_glitch_demo) {
-      reply.header(
-        'shared-dictionary-url',
-        'https://shared-brotli-dictionary.glitch.me/wikipedia.dict');
-    } else {
-      reply.header('shared-dictionary-url','/wikipedia.dict');
-    }
+    reply.header(
+      'link','</wikipedia.dict>; rel=dictionary; as=document');
     reply.send(Buffer.from(data.br));
   }
 });
@@ -351,7 +356,9 @@ fastify.get(`/google_search.dict`, async function (request, reply) {
   reply.header('Cache-Control', 'public');
   reply.header('content-type', 'binary/octet-stream');
   reply.header('Can-Be-Used-As-Dictionary', '/google_search/');
+  reply.header('use-as-dictionary', 'match="/google_search/*"');
   reply.header('content-length', google_search_data.dict.compressed.length);
+  reply.header('Origin-Trial', OT_TOKEN);
   reply.header('content-encoding', 'br');
   reply.send(Buffer.from(google_search_data.dict.compressed));
 });
@@ -380,22 +387,21 @@ fastify.get(`/google_search/`, async function (request, reply) {
   }
   if (
     request.headers["sec-available-dictionary"] ==
-    'sha256/' + google_search_data.dict.sha256
+      'sha256/' + google_search_data.dict.sha256 ||
+    request.headers["sec-available-dictionary"] == google_search_data.dict.hashhex
   ) {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'sbr');
     reply.header('vary', 'sec-available-dictionary');
+    reply.header('Origin-Trial', OT_TOKEN);
     reply.send(Buffer.from(data.sbr));
   } else {
     reply.header('content-length', data.br.length);
     reply.header('content-encoding', 'br');
-    if (is_in_glitch_demo) {
-      reply.header(
-        'shared-dictionary-url',
-        'https://shared-brotli-dictionary.glitch.me/google_search.dict');
-    } else {
-      reply.header('shared-dictionary-url','/google_search.dict');
-    }
+    reply.header('Origin-Trial', OT_TOKEN);
+    reply.header(
+      'link','</google_search.dict>; rel=dictionary; as=document');
+    
     reply.send(Buffer.from(data.br));
   }
 });
